@@ -1,0 +1,36 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: next-front
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
+    restart: unless-stopped
+    # Раскомментируйте если бэкенд в том же compose файле
+    # depends_on:
+    #   - backend
+
+  # Раскомментируйте и настройте если бэкенд должен быть в этом compose файле
+  # backend:
+  #   image: your-backend-image:latest  # Замените на ваш образ бэкенда
+  #   # или используйте build:
+  #   # build:
+  #   #   context: ../backend
+  #   #   dockerfile: Dockerfile
+  #   container_name: backend-api
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     # Добавьте другие переменные окружения для бэкенда
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-network
+  #   volumes:
+  #     - ./backend-data:/app/data  # Раскомментируйте если нужно
+
+

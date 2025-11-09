@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: next-front-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    restart: unless-stopped
+    command: npm run dev
+
+  # Раскомментируйте если нужен бэкенд в dev режиме
+  # backend:
+  #   image: your-backend-image:latest
+  #   container_name: backend-api-dev
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #   volumes:
+  #     - ./backend:/app
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-network
+
