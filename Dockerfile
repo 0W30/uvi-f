@@ -7,16 +7,25 @@ WORKDIR /app
 
 # Копируем файлы зависимостей
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps || npm ci
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
 # Отключаем telemetry Next.js
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# Копируем зависимости из предыдущего stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Копируем исходный код
+COPY . .
+
+# Устанавливаем переменные окружения для сборки
+ENV NODE_ENV=production
+# NEXT_PUBLIC_API_URL будет установлен во время сборки или runtime
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
 
 # Собираем приложение
 RUN npm run build
@@ -33,6 +42,9 @@ RUN adduser --system --uid 1001 nextjs
 
 # Копируем необходимые файлы из standalone сборки
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Копируем standalone сборку (Next.js создает её в .next/standalone)
+# Проверяем наличие standalone директории
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 

@@ -129,9 +129,9 @@ class ApiClient {
 
     const url = `${this.baseUrl}${endpoint}`;
     // Сначала устанавливаем базовые заголовки и заголовки из options
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string> || {}),
     };
 
     // Затем добавляем Authorization заголовок с префиксом Bearer (чтобы он не был перезаписан)

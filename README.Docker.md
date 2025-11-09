@@ -71,14 +71,43 @@ docker-compose exec frontend sh
 
 ## Troubleshooting
 
+### Проблемы со сборкой
+
+Если основной Dockerfile не работает, попробуйте:
+
+1. **Использовать упрощенный Dockerfile:**
+   ```bash
+   docker build -f Dockerfile.simple -t next-front .
+   ```
+
+2. **Проверить ошибки сборки локально:**
+   ```bash
+   npm run build
+   ```
+
+3. **Очистить кэш и пересобрать:**
+   ```bash
+   docker system prune -a
+   docker-compose build --no-cache
+   ```
+
+4. **Проверить логи сборки:**
+   ```bash
+   docker-compose build --progress=plain 2>&1 | tee build.log
+   ```
+
+5. **Проблемы с зависимостями:**
+   - Убедитесь, что `package-lock.json` актуален
+   - Попробуйте удалить `node_modules` и `package-lock.json`, затем `npm install`
+
+6. **Проблемы с TypeScript:**
+   - Проверьте `tsconfig.json`
+   - Убедитесь, что все типы правильно определены
+
 ### Проблемы с подключением к бэкенду
 
 1. Убедитесь, что бэкенд запущен: `docker-compose ps`
 2. Проверьте сеть: `docker network ls`
 3. Проверьте логи бэкенда: `docker-compose logs backend`
-
-### Проблемы со сборкой
-
-1. Очистите кэш Docker: `docker system prune -a`
-2. Пересоберите без кэша: `docker-compose build --no-cache`
+4. Проверьте переменную окружения `NEXT_PUBLIC_API_URL`
 

@@ -1,0 +1,26 @@
+# Упрощенный Dockerfile для отладки
+# Используйте этот файл если основной Dockerfile не работает
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Устанавливаем зависимости
+COPY package.json package-lock.json* ./
+RUN npm ci --legacy-peer-deps || npm ci
+
+# Копируем исходный код
+COPY . .
+
+# Отключаем telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+
+# Собираем приложение
+RUN npm run build
+
+# Запускаем приложение
+EXPOSE 3000
+
+CMD ["npm", "start"]
+
